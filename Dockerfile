@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# 1. Set environment variable agar Laravel tidak protes saat build
+# 1. Set environment variable
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV CACHE_STORE=array
-ENV SESSION_DRIVER=array
+ENV CACHE_STORE=file
+ENV SESSION_DRIVER=file
 ENV LOG_CHANNEL=stderr
 
 # 2. Install dependencies sistem
@@ -15,37 +15,41 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 3. Install extension PHP menggunakan installer otomatis
+# 3. Install extension PHP
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions intl gd zip bcmath exif pcntl opcache pdo_mysql mbstring
 
 # 4. Konfigurasi Apache
 RUN a2enmod rewrite
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # 5. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Setup Project & Siapkan Folder
+# 6. Setup Project
 WORKDIR /var/www/html
 COPY . .
+
+# 7. Siapkan Folder & File Database (PENTING: Di tahap build)
 RUN mkdir -p database storage bootstrap/cache && \
     touch database/database.sqlite && \
-    chmod -R 775 storage bootstrap/cache database && \
+    chmod -R 777 storage bootstrap/cache database && \
     chown -R www-data:www-data .
 
-# 7. Install PHP Dependencies (Mengabaikan script otomatis agar tidak error database)
+# 8. Install Dependencies & Optimize (Biar boot cepat)
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
-
-# 8. Install Node.js & Build Assets
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get update && apt-get install -y nodejs && \
+    apt-get install -y nodejs && \
     npm install && \
-    npm run build && \
-    rm -rf node_modules
+    npm run build
 
-# 9. Jalankan Aplikasi (Migrasi akan dilakukan saat container menyala)
-CMD ["sh", "-c", "php artisan migrate --force && php artisan optimize && apache2-foreground"]
+# 9. Pre-generate cache
+RUN php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
+
+# 10. Jalankan Aplikasi (Hanya migrasi yang dijalankan saat boot)
+CMD ["sh", "-c", "php artisan migrate --force && apache2-foreground"]
