@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# 1. Set environment variable untuk Composer
+# 1. Set environment variable
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# 2. Install dependencies sistem (termasuk unzip untuk memperbaiki log tadi)
+# 2. Install dependencies sistem
 RUN apt-get update && apt-get install -y \
     zip \
     unzip \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 3. Install extension PHP menggunakan installer otomatis
+# 3. Install extension PHP
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions intl gd zip bcmath exif pcntl opcache pdo_mysql mbstring
@@ -26,11 +26,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 # 5. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Setup Project
+# 6. Setup Project & Create Database File (DIPINDAH KE ATAS)
 WORKDIR /var/www/html
 COPY . .
+RUN mkdir -p database storage bootstrap/cache && \
+    touch database/database.sqlite && \
+    chmod -R 775 storage bootstrap/cache database && \
+    chown -R www-data:www-data .
 
-# 7. Install PHP Dependencies
+# 7. Install PHP Dependencies (Sekarang database sudah ada, jadi tidak akan error)
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # 8. Install Node.js & Build Assets
@@ -40,12 +44,5 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     npm run build && \
     rm -rf node_modules
 
-# 9. Izin Folder & SQLite
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && \
-    touch /var/www/html/database/database.sqlite && \
-    chown www-data:www-data /var/www/html/database/database.sqlite && \
-    chmod 664 /var/www/html/database/database.sqlite
-
-# 10. Jalankan Aplikasi
+# 9. Jalankan Aplikasi
 CMD php artisan migrate --force && apache2-foreground
