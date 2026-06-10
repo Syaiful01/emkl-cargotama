@@ -20,7 +20,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions intl gd zip bcmath exif pcntl opcache pdo_mysql mbstring
 
-# 4. Konfigurasi Apache
+# 4. Konfigurasi Apache (Port Dinamis)
 RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -33,16 +33,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
-# 7. Siapkan Folder & File Database (PENTING: Di tahap build)
+# 7. Siapkan Folder & File Database
 RUN mkdir -p database storage bootstrap/cache && \
     touch database/database.sqlite && \
     chmod -R 777 storage bootstrap/cache database && \
     chown -R www-data:www-data .
 
-# 8. Install Dependencies & Optimize (Biar boot cepat)
+# 8. Install Dependencies & Optimize
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get update && apt-get install -y nodejs && \
     npm install && \
     npm run build
 
@@ -51,5 +51,5 @@ RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
-# 10. Jalankan Aplikasi (Hanya migrasi yang dijalankan saat boot)
-CMD ["sh", "-c", "php artisan migrate --force && apache2-foreground"]
+# 10. Jalankan Aplikasi dengan Port Dinamis dari Railway
+CMD sh -c "sed -i 's/Listen 80/Listen '${PORT:-80}'/g' /etc/apache2/ports.conf && sed -i 's/<VirtualHost \*:80>/<VirtualHost *:'${PORT:-80}'>/g' /etc/apache2/sites-available/000-default.conf && php artisan migrate --force && apache2-foreground"
