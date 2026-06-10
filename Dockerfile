@@ -7,11 +7,14 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libonig-dev \
+    libicu-dev \
     zip \
     curl \
     unzip \
     && docker-php-ext-configure gd \
     && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
@@ -21,8 +24,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install bcmath \
     && docker-php-ext-install opcache \
     && docker-php-ext-install gettext \
-    && docker-php-ext-install soap \
-    && docker-php-ext-install intl
+    && docker-php-ext-install soap
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
