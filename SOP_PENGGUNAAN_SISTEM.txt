@@ -1,0 +1,61 @@
+SOP PENGGUNAAN SISTEM MANAJEMEN EMKL - PT. CARGOTAMA
+====================================================
+
+DOKUMEN: Standar Operasional Prosedur (SOP)
+VERSI: 1.0
+TANGGAL: 12 Juni 2026
+
+I. AKSES SISTEM & LOGIN
+-----------------------
+1. Buka browser dan masukkan alamat URL aplikasi.
+2. Masukkan Email dan Password yang telah didaftarkan.
+3. Klik tombol "Login".
+4. Setelah masuk, Anda akan diarahkan ke halaman Dashboard yang menampilkan ringkasan data.
+
+II. MANAJEMEN PELANGGAN (CUSTOMERS)
+-----------------------------------
+1. Klik menu "Pelanggan" di sidebar kiri.
+2. Untuk menambah: Klik tombol "Pelanggan Baru", isi data (Nama, Kode, Kontak), lalu Simpan.
+3. Untuk melihat/edit: Gunakan aksi pada tabel pelanggan untuk memperbarui informasi.
+
+III. PELACAKAN PENGIRIMAN (SHIPMENTS) - MODUL INTI
+-------------------------------------------------
+1. Klik menu "Pengiriman" di sidebar kiri.
+2. Membuat Pengiriman Baru:
+   - Klik tombol "+ Pengiriman Baru".
+   - Isi Nomor Pekerjaan (Job Number), pilih Pelanggan.
+   - Masukkan detail Kapal, Voyage, POL (Pelabuhan Muat), dan POD (Pelabuhan Bongkar).
+   - Masukkan estimasi tanggal ETD dan ETA.
+   - Klik "Buat Pengiriman".
+3. Memperbarui Status Pengiriman (SOP Khusus):
+   - Temukan pengiriman yang ingin diupdate pada tabel.
+   - Klik tombol TITIK TIGA (...) di kolom Aksi paling kanan.
+   - JIKA PENGIRIMAN TELAH TIBA: Pilih "Tandai Sudah Sampai". Status akan berubah menjadi "Selesai" (Warna Hijau).
+   - JIKA TERJADI KESALAHAN: Klik titik tiga lagi, lalu pilih "Tandai Belum Sampai" untuk mengembalikan status ke "Dalam Perjalanan".
+4. Detail Pengiriman: Klik ikon Mata atau "Detail" pada menu titik tiga untuk melihat histori lengkap pengiriman.
+
+IV. MANAJEMEN DOKUMEN
+---------------------
+1. Klik menu "Dokumen".
+2. Unggah dokumen terkait pengiriman (BL, Invoice, Packing List).
+3. Sistem akan mencoba membaca data secara otomatis (Parsing) untuk dokumen tertentu.
+
+V. INVOICE & PIUTANG (RECEIVABLES)
+----------------------------------
+1. Klik menu "Invoice" untuk melihat daftar tagihan.
+2. Membuat Invoice: Pilih pengiriman yang sudah selesai, masukkan item biaya, lalu simpan.
+3. Cetak PDF: Gunakan tombol download/cetak pada daftar invoice untuk mengunduh berkas PDF resmi.
+4. Monitoring Piutang: Gunakan menu "Piutang" untuk memantau tagihan yang belum dibayar atau sudah jatuh tempo.
+
+VI. PENGATURAN & PENGGUNA
+-------------------------
+1. Menu "Pengaturan": Mengubah informasi perusahaan atau konfigurasi sistem.
+2. Menu "Pengguna": Menambah staff baru atau mengatur hak akses (Role) bagi Administrator lain.
+
+VII. LOGOUT
+-----------
+1. Klik profil di pojok kanan atas.
+2. Pilih "Keluar" untuk mengakhiri sesi secara aman.
+
+----------------------------------------------------
+Catatan: Jika menu dropdown pada tombol titik tiga (...) terpotong, pastikan ukuran layar cukup luas atau gulir tabel ke bawah. Sistem telah dilengkapi dengan ruang minimum agar menu tetap terlihat.

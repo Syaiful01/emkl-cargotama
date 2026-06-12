@@ -55,11 +55,19 @@ class ShipmentService
 
     protected function logHistory($shipmentId, $status, $description = null)
     {
+        $userId = Auth::id();
+        
+        // If not authenticated (e.g., from seeder or command), try to find first user
+        if (!$userId) {
+            $user = \App\Models\User::first();
+            $userId = $user ? $user->id : 1;
+        }
+
         ShipmentHistory::create([
             'shipment_id' => $shipmentId,
             'status' => $status,
             'description' => $description,
-            'user_id' => Auth::id() ?? 1, // Default to admin for now if no auth
+            'user_id' => $userId,
         ]);
     }
 }

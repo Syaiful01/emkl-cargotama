@@ -17,6 +17,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('customers', CustomerController::class);
     Route::resource('shipments', ShipmentController::class);
+    Route::patch('shipments/{id}/status', [ShipmentController::class, 'updateStatus'])->name('shipments.update-status');
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{id}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
     Route::resource('documents', DocumentController::class);

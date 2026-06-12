@@ -68,8 +68,40 @@
                             </span>
                         </td>
                         <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-eye"></i></a>
-                            <button class="btn btn-sm btn-outline-dark"><i class="bi bi-three-dots"></i></button>
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2 text-primary"></i> Detail</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    @if($shipment->status !== 'completed')
+                                    <li>
+                                        <form action="{{ route('shipments.update-status', $shipment->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="completed">
+                                            <input type="hidden" name="description" value="Pengiriman telah sampai di tujuan.">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-check-circle me-2 text-success"></i> Tandai Sudah Sampai
+                                            </button>
+                                        </form>
+                                    </li>
+                                    @else
+                                    <li>
+                                        <form action="{{ route('shipments.update-status', $shipment->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="in transit">
+                                            <input type="hidden" name="description" value="Dikembalikan ke status dalam perjalanan.">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-x-circle me-2 text-danger"></i> Tandai Belum Sampai
+                                            </button>
+                                        </form>
+                                    </li>
+                                    @endif
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @empty

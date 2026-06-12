@@ -65,6 +65,11 @@ class ShipmentController extends Controller
         ]);
 
         $shipment = $this->shipmentService->updateStatus($id, $validated['status'], $validated['description']);
-        return response()->json($shipment);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($shipment);
+        }
+
+        return redirect()->back()->with('success', 'Status pengiriman berhasil diperbarui.');
     }
 }
